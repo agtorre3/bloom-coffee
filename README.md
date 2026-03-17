@@ -14,7 +14,7 @@ Welcome! This repo contains the exercise brief for **Bloom Coffee**, a small cof
 4. **Open a pull request** back to our repo. In the PR description, include: **link to your deployed app**, **admin login credentials** (or how to create an admin), and optionally your **tech stack** and any **trade-offs or decisions** you want us to know about.
 5. Our engineers will review your code and deployment. If we move forward, **Phase 2** will be a pairing session where you propose one or two features that would add business value to Bloom Coffee, we'll do a short planning together, and then you'll implement and deploy those with us.
 
-**Time:** Please complete within one week of receiving this exercise.
+**Time:** We've scoped this for about **2–3 hours** of focused work. You're welcome to take longer if you'd like—we'd rather you finish at your pace than feel rushed. We've kept the scope intentional so you can complete it without an overwhelming commitment. Please submit within one week of receiving this exercise.
 
 **Questions?** Email Mike Benner at michael.b@bloomgrowth.com
 
