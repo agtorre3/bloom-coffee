@@ -36,6 +36,44 @@ RSpec.describe "Admin::Drinks", type: :request do
     end
   end
 
+  describe "POST /admin/drinks" do
+    context "when not signed in" do
+      it "redirects to the login page" do
+        post admin_drinks_path, params: { drink: { name: "Latte", base_price: 4.00 } }
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when signed in as a non-admin user" do
+      before { sign_in create(:user) }
+
+      it "redirects with an authorization error" do
+        post admin_drinks_path, params: { drink: { name: "Latte", base_price: 4.00 } }
+        expect(response).to redirect_to(root_path)
+      end
+    end
+  end
+
+  describe "DELETE /admin/drinks/:id" do
+    let!(:drink) { create(:drink) }
+
+    context "when not signed in" do
+      it "redirects to the login page" do
+        delete admin_drink_path(drink)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when signed in as a non-admin user" do
+      before { sign_in create(:user) }
+
+      it "redirects with an authorization error" do
+        delete admin_drink_path(drink)
+        expect(response).to redirect_to(root_path)
+      end
+    end
+  end
+
   describe "GET /admin/drinks/new" do
     before { sign_in create(:user, :admin) }
 

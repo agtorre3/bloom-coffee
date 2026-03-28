@@ -31,6 +31,44 @@ RSpec.describe "Admin::AddOns", type: :request do
     end
   end
 
+  describe "POST /admin/add_ons" do
+    context "when not signed in" do
+      it "redirects to the login page" do
+        post admin_add_ons_path, params: { add_on: { name: "Oat Milk", price: 0.75 } }
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when signed in as a non-admin user" do
+      before { sign_in create(:user) }
+
+      it "redirects with an authorization error" do
+        post admin_add_ons_path, params: { add_on: { name: "Oat Milk", price: 0.75 } }
+        expect(response).to redirect_to(root_path)
+      end
+    end
+  end
+
+  describe "DELETE /admin/add_ons/:id" do
+    let!(:add_on) { create(:add_on) }
+
+    context "when not signed in" do
+      it "redirects to the login page" do
+        delete admin_add_on_path(add_on)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when signed in as a non-admin user" do
+      before { sign_in create(:user) }
+
+      it "redirects with an authorization error" do
+        delete admin_add_on_path(add_on)
+        expect(response).to redirect_to(root_path)
+      end
+    end
+  end
+
   context "when signed in as admin" do
     let(:admin) { create(:user, :admin) }
     before { sign_in admin }
