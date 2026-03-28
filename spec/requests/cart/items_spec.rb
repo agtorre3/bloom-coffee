@@ -47,6 +47,13 @@ RSpec.describe "Cart::Items", type: :request do
       follow_redirect!
       expect(response.body).to include("Latte added to your order")
     end
+
+    it "redirects with an alert when drink_id is missing" do
+      post cart_items_path, params: { order_item: { drink_id: nil, quantity: 1 } }
+      expect(response).to have_http_status(:redirect)
+      follow_redirect!
+      expect(response.body).to include("Could not add item to order")
+    end
   end
 
   describe "PATCH /cart/items/:id" do
@@ -65,6 +72,16 @@ RSpec.describe "Cart::Items", type: :request do
 
       patch cart_item_path(item), params: { quantity: 0 }
       expect(item.reload.quantity).to eq(1)
+      expect(response).to redirect_to(cart_path)
+    end
+
+    it "rejects negative quantity" do
+      post cart_items_path, params: { order_item: { drink_id: drink.id, quantity: 1 } }
+      item = OrderItem.last
+
+      patch cart_item_path(item), params: { quantity: -3 }
+      expect(item.reload.quantity).to eq(1)
+      expect(response).to redirect_to(cart_path)
     end
   end
 

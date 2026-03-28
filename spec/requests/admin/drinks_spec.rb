@@ -161,5 +161,17 @@ RSpec.describe "Admin::Drinks", type: :request do
       expect { delete admin_drink_path(drink) }.to change(Drink, :count).by(-1)
       expect(response).to redirect_to(admin_drinks_path)
     end
+
+    it "cannot delete a drink that is part of an existing order" do
+      drink = create(:drink, name: "Protected Latte")
+      order = create(:order, status: :cart)
+      create(:order_item, order: order, drink: drink)
+
+      expect { delete admin_drink_path(drink) }.not_to change(Drink, :count)
+      expect(response).to redirect_to(admin_drinks_path)
+      follow_redirect!
+      expect(response.body).to include("Cannot delete")
+      expect(response.body).to include("Protected Latte")
+    end
   end
 end
