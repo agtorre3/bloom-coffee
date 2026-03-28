@@ -36,8 +36,11 @@ class Admin::DrinksController < Admin::BaseController
   end
 
   def destroy
-    @drink.destroy!
-    redirect_to admin_drinks_path, notice: "Drink was successfully deleted."
+    if @drink.destroy
+      redirect_to admin_drinks_path, notice: "Drink was successfully deleted."
+    else
+      redirect_to admin_drinks_path, alert: "Cannot delete \"#{@drink.name}\" because it is part of existing orders."
+    end
   end
 
   private

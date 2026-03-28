@@ -15,7 +15,7 @@
       <% if @add_ons.any? %>
         <fieldset class="mt-2">
           <legend class="text-sm font-medium text-stone-700">Add extras</legend>
-          <div class="mt-3 space-y-3">
+          <div class="mt-3 max-h-64 space-y-3 overflow-y-auto">
             <% @add_ons.each do |add_on| %>
               <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-stone-200 px-4 py-3 transition hover:border-amber-300 hover:bg-amber-50/30 has-[:checked]:border-amber-400 has-[:checked]:bg-amber-50/50">
                 <input type="checkbox"
