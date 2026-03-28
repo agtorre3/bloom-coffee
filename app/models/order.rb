@@ -3,11 +3,17 @@ class Order < ApplicationRecord
 
   enum :status, { cart: 0, submitted: 1 }
 
+  validates :customer_name, presence: true, if: :submitted?
+
   def total
     order_items.sum(&:line_total)
   end
 
   def item_count
     order_items.sum(:quantity)
+  end
+
+  def order_number
+    "##{id}"
   end
 end

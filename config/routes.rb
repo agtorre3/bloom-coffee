@@ -12,6 +12,8 @@ Rails.application.routes.draw do
     resources :items, only: %i[create update destroy], controller: "cart/items"
   end
 
+  resources :orders, only: %i[create show]
+
   namespace :admin do
     root to: "dashboard#show"
     resources :drinks

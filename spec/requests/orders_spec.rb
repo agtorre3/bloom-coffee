@@ -1,0 +1,84 @@
+require "rails_helper"
+
+RSpec.describe "Orders", type: :request do
+  let!(:drink) { create(:drink, name: "Latte", base_price: 4.00) }
+  let!(:add_on) { create(:add_on, name: "Oat Milk", price: 0.50) }
+
+  describe "POST /orders" do
+    context "with a valid name and items in cart" do
+      it "submits the order and redirects to confirmation" do
+        post cart_items_path, params: { order_item: { drink_id: drink.id, quantity: 1, add_on_ids: [ add_on.id ] } }
+        order = Order.last
+
+        post orders_path, params: { order: { customer_name: "Jordan" } }
+
+        expect(order.reload.status).to eq("submitted")
+        expect(order.customer_name).to eq("Jordan")
+        expect(response).to redirect_to(order_path(order))
+      end
+
+      it "clears the session so a new cart is created" do
+        post cart_items_path, params: { order_item: { drink_id: drink.id, quantity: 1 } }
+
+        post orders_path, params: { order: { customer_name: "Jordan" } }
+
+        get cart_path
+        expect(response.body).to include("Your order is empty")
+      end
+    end
+
+    context "with a blank name" do
+      it "redirects back to cart with an alert" do
+        post cart_items_path, params: { order_item: { drink_id: drink.id, quantity: 1 } }
+
+        post orders_path, params: { order: { customer_name: "" } }
+
+        expect(response).to redirect_to(cart_path)
+        follow_redirect!
+        expect(response.body).to include("Please provide your name for pickup")
+      end
+
+      it "does not change the order status" do
+        post cart_items_path, params: { order_item: { drink_id: drink.id, quantity: 1 } }
+        order = Order.last
+
+        post orders_path, params: { order: { customer_name: "" } }
+
+        expect(order.reload.status).to eq("cart")
+      end
+    end
+
+    context "with an empty cart" do
+      it "redirects back to cart with an alert" do
+        post orders_path, params: { order: { customer_name: "Jordan" } }
+
+        expect(response).to redirect_to(cart_path)
+        follow_redirect!
+        expect(response.body).to include("Your order is empty")
+      end
+    end
+  end
+
+  describe "GET /orders/:id" do
+    it "shows the confirmation page for a submitted order" do
+      post cart_items_path, params: { order_item: { drink_id: drink.id, quantity: 2, add_on_ids: [ add_on.id ] } }
+      order = Order.last
+
+      post orders_path, params: { order: { customer_name: "Jordan" } }
+
+      get order_path(order)
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Order ##{order.id} confirmed")
+      expect(response.body).to include("Jordan")
+      expect(response.body).to include("Latte")
+      expect(response.body).to include("Oat Milk")
+      expect(response.body).to include("$9.00")
+    end
+
+    it "returns 404 for a cart order (not yet submitted)" do
+      order = create(:order, status: :cart)
+      get order_path(order)
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+end
