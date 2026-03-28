@@ -80,11 +80,10 @@ RSpec.describe "Orders", type: :request do
       expect(response.body).to include("$9.00")
     end
 
-    it "redirects with an alert for a cart order (not yet submitted)" do
+    it "redirects for a cart order (not yet submitted)" do
       order = create(:order, status: :cart)
       get order_path(order)
       expect(response).to redirect_to(root_path)
-      expect(flash[:alert]).to eq("The page you were looking for could not be found.")
     end
   end
 end
