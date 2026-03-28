@@ -6,6 +6,12 @@ Rails.application.routes.draw do
 
   root "home#index"
 
+  resources :menu, only: %i[index show], controller: "menu"
+
+  resource :cart, only: %i[show], controller: "cart" do
+    resources :items, only: %i[create update destroy], controller: "cart/items"
+  end
+
   namespace :admin do
     root to: "dashboard#show"
     resources :drinks
