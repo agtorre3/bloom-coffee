@@ -24,6 +24,15 @@ RSpec.describe "Cart::Items", type: :request do
       expect(item.add_ons).to include(add_on)
     end
 
+    it "deduplicates add-on IDs so the same add-on is only applied once" do
+      post cart_items_path, params: {
+        order_item: { drink_id: drink.id, quantity: 1, add_on_ids: [ add_on.id, add_on.id ] }
+      }
+
+      item = OrderItem.last
+      expect(item.order_item_add_ons.count).to eq(1)
+    end
+
     it "shows a flash notice" do
       post cart_items_path, params: { order_item: { drink_id: drink.id, quantity: 1 } }
       follow_redirect!

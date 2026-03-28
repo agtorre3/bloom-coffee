@@ -35,7 +35,7 @@ class Cart::ItemsController < ApplicationController
   end
 
   def save_add_ons(order_item)
-    add_on_ids = Array(params[:order_item][:add_on_ids]).reject(&:blank?)
+    add_on_ids = Array(params[:order_item][:add_on_ids]).reject(&:blank?).uniq
     return if add_on_ids.empty?
 
     AddOn.where(id: add_on_ids).find_each do |add_on|
