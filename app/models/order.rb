@@ -6,10 +6,9 @@ class Order < ApplicationRecord
   validates :customer_name, presence: true, if: :submitted?
 
   def total
-    order_items
-      .joins(:drink)
-      .left_joins(:add_ons)
-      .sum("(drinks.base_price + COALESCE(add_ons.price, 0)) * order_items.quantity")
+    base_total = order_items.joins(:drink).sum("order_items.quantity * drinks.base_price")
+    add_on_total = order_items.joins(order_item_add_ons: :add_on).sum("order_items.quantity * add_ons.price")
+    base_total + add_on_total
   end
 
   def item_count
