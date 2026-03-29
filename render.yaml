@@ -5,6 +5,7 @@ services:
     plan: free
     buildCommand: './bin/render-build.sh'
     startCommand: './bin/rails server'
+    healthCheckPath: /up
     envVars:
       - key: DATABASE_URL
         fromDatabase:
