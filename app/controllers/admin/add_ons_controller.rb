@@ -39,7 +39,7 @@ class Admin::AddOnsController < Admin::BaseController
     if @add_on.destroy
       redirect_to admin_add_ons_path, notice: "Add-on was successfully deleted."
     else
-      redirect_to admin_add_ons_path, alert: "Cannot delete \"#{@add_on.name}\" because it is part of existing orders."
+      redirect_to admin_add_ons_path, alert: "There was a problem deleting this add-on."
     end
   end
 

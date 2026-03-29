@@ -39,7 +39,7 @@ class Admin::DrinksController < Admin::BaseController
     if @drink.destroy
       redirect_to admin_drinks_path, notice: "Drink was successfully deleted."
     else
-      redirect_to admin_drinks_path, alert: "Cannot delete \"#{@drink.name}\" because it is part of existing orders."
+      redirect_to admin_drinks_path, alert: "There was a problem deleting this drink."
     end
   end
 

@@ -154,16 +154,17 @@ RSpec.describe "Admin::AddOns", type: :request do
         expect(response.body).to include("Add-on was successfully deleted.")
       end
 
-      it "cannot delete an add-on that is part of an existing order" do
-        add_on = create(:add_on, name: "Protected Syrup")
+      it "deletes the add-on and cascades join rows on order items" do
+        add_on = create(:add_on, name: "Syrup To Remove")
         order_item = create(:order_item)
         create(:order_item_add_on, order_item: order_item, add_on: add_on)
 
-        expect { delete admin_add_on_path(add_on) }.not_to change(AddOn, :count)
+        expect { delete admin_add_on_path(add_on) }.to change(AddOn, :count).by(-1)
+          .and change(OrderItemAddOn, :count).by(-1)
         expect(response).to redirect_to(admin_add_ons_path)
         follow_redirect!
-        expect(response.body).to include("Cannot delete")
-        expect(response.body).to include("Protected Syrup")
+        expect(response.body).to include("successfully deleted")
+        expect(order_item.reload.add_ons).not_to include(add_on)
       end
     end
   end
